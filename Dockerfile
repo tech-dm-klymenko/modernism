@@ -2,7 +2,8 @@ FROM python:3.11  AS builder
 
 WORKDIR /usr/src/app
 
-RUN apt-get update
+RUN apt-get update && \
+    apt-get install -y build-essential
 
 COPY requirements.txt .
 
@@ -10,12 +11,7 @@ RUN python -m venv /venv && \
     /venv/bin/pip install --upgrade pip && \
     /venv/bin/pip install -r requirements.txt
 
-
-RUN python -m venv /venv && \
-    /venv/bin/pip install --upgrade pip && \
-    /venv/bin/pip install -r requirements.txt
-
-FROM python:3.11-slim-buster
+FROM python:3.11
 
 WORKDIR /usr/src/app
 
