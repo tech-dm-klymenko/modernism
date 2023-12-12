@@ -1,17 +1,15 @@
-FROM python:3.11  AS builder
+FROM python:3.11-buster  AS builder
 
 WORKDIR /usr/src/app
 
-RUN apt-get update && \
-    apt-get install -y build-essential
-
 COPY requirements.txt .
 
-RUN python -m venv /venv && \
+RUN apt-get update && \
+    python -m venv /venv && \
     /venv/bin/pip install --upgrade pip && \
     /venv/bin/pip install -r requirements.txt
 
-FROM python:3.11
+FROM python:3.11-buster
 
 WORKDIR /usr/src/app
 
