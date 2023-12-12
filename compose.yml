@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mia-database:
+    image: postgres:13.9
+    restart: always
+    environment:
+      POSTGRES_DB: ${SQL_DATABASE}
+      POSTGRES_USER: ${SQL_USER}
+      POSTGRES_PASSWORD: ${SQL_PASSWORD}
+      POSTGRES_HOST: ${SQL_HOST}
+      POSTGRES_PORT: ${SQL_PORT}
+    volumes:
+      - mia-data:/var/lib/postgresql/data/
+    healthcheck:
+      test: "pg_isready -h mia-database"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mia_network
+  web:
+    build: .
+    image: mia:latest
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      mia-database:
+        condition: service_healthy
+    networks:
+      - mia_network
+
+networks:
+  mia_network:
+    driver: bridge
+
+volumes:
+  mia-data:
+    name: mia-data
+    external: false
